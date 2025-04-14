@@ -3,3 +3,11 @@ body {
     padding: 10px;
     padding-left: 20px;
 }
+
+.casella {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: black;
+    margin-left: 20px;
+}
