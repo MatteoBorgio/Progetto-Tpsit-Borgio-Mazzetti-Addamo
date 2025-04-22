@@ -18,16 +18,112 @@
             height: 50px;
             background-color: black;
             margin-left: 20px;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
     <div id="container">
         <h1>Il gioco del cento</h1>
-        <div id="game_container">
-
-        </div>
     </div>
-    <script src="script.js"></script>
+    <script>
+        const parametri = new URLSearchParams(window.location.search);
+        const difficoltà = parametri.get('difficulty')
+        let grandezzaMatrice = 0;
+        let caselleCliccate = new Array();
+
+        if (difficoltà === 'easy') {
+            grandezzaMatrice = 5;
+        }
+        else if (difficoltà === 'medium') {
+            grandezzaMatrice = 7;
+        }
+        else {
+            grandezzaMatrice = 10;
+        }
+
+        // Funzione per creare la matrice che rappresenterà la nostra griglia di gioco
+        function creaMatrice(grandezzaMatrice) {
+            let matrice = new Array();
+            for (let i = 0; i < grandezzaMatrice; i++) {
+                matrice[i] = new Array();
+                for (let j = 0; j < grandezzaMatrice; j++) {
+                    let casella = document.createElement("div");
+                    casella.setAttribute('class', 'casella');
+                    matrice[i][j] = casella; 
+                    document.body.appendChild(matrice[i][j]);
+                    // Posizionamento dinamico delle caselle, in base alla posizione della casella precendente
+                    let x = (i * 55) + 130;
+                    let y = (j * 55) + 10;
+                    matrice[i][j].style.top = x + "px"; 
+                    matrice[i][j].style.left = y + "px";
+                    matrice[i][j].style.position = "absolute";
+                }
+            }
+            return matrice;
+        }
+        
+        // Funzione che colora le caselle disponibili per la mossa
+        function mostraMossePossibili(casella, matrice, caselleCliccate) {
+            caselleCliccate.push(casella); // Aggiunge la casella cliccata all'array delle caselle cliccate
+            for (let i = 0; i < matrice.length; i++) { // Rimuove il colore dalle caselle precedentemente colorate
+                for (let j = 0; j < matrice.length; j++) {
+                    matrice[i][j].style.backgroundColor = "black";
+                }
+                for (let k = 0; k < caselleCliccate.length; k++) { // Colora di blu le caselle già cliccate
+                    caselleCliccate[k].style.backgroundColor = "blue";
+                }
+            }
+            let x = Infinity;
+            let y = Infinity;
+            for (let i = 0; i < matrice.length; i++) { // Trova la posizione della casella cliccata all'interno della matrice
+                for (let j = 0; j < matrice.length; j++) {
+                    if (matrice[i][j] === casella) {
+                        x = i;
+                        y = j;
+                    }
+                }
+                let mossePossibili = [
+                    [x - 3, y],
+                    [x + 3, y],
+                    [x, y - 3],
+                    [x, y + 3],
+                    [x - 2, y - 2],
+                    [x - 2, y + 2],
+                    [x + 2, y - 2],
+                    [x + 2, y + 2],
+                ];
+                // Trova e rimuove le mosse che eccedono in positivo o in negativo la grandezza della matrice
+                for (let i = 0; i < mossePossibili.length; i++) {
+                    let mossaX = mossePossibili[i][0];
+                    let mossaY = mossePossibili[i][1];
+                    if (mossaX < 0 || mossaX >= matrice.length || mossaY < 0 || mossaY >= matrice.length) {
+                        mossePossibili.splice(i, 1);
+                        i--;
+                    }
+                }
+                // Colora le caselle disponibili per la mossa, non le colora se sono già cliccate
+                for (let i = 0; i < mossePossibili.length; i++) {
+                    let mossaX = mossePossibili[i][0];
+                    let mossaY = mossePossibili[i][1];
+                    if (matrice[mossaX][mossaY].style.backgroundColor == "blue") {
+                        matrice[mossaX][mossaY].style.backgroundColor = "blue";
+                    }
+                    else {
+                        matrice[mossaX][mossaY].style.backgroundColor = "red";
+                    }                }
+            }
+        }
+
+        matrice = creaMatrice(grandezzaMatrice);
+
+        for (let i = 0; i < matrice.length; i++) {
+            for (let j = 0; j < matrice.length; j++) {
+                matrice[i][j].addEventListener("click", function() {
+                    mostraMossePossibili(matrice[i][j], matrice, caselleCliccate);
+                });
+            }
+        }
+    </script>
 </body>
 </html>
