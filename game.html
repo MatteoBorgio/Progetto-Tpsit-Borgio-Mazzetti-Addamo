@@ -45,13 +45,14 @@
         // Funzione per creare la matrice che rappresenterà la nostra griglia di gioco
         function creaMatrice(grandezzaMatrice) {
             let matrice = new Array();
+            const container = document.getElementById("container");
             for (let i = 0; i < grandezzaMatrice; i++) {
                 matrice[i] = new Array();
                 for (let j = 0; j < grandezzaMatrice; j++) {
                     let casella = document.createElement("div");
                     casella.setAttribute('class', 'casella');
                     matrice[i][j] = casella; 
-                    document.body.appendChild(matrice[i][j]);
+                    container.appendChild(matrice[i][j]);
                     // Posizionamento dinamico delle caselle, in base alla posizione della casella precendente
                     let x = (i * 55) + 130;
                     let y = (j * 55) + 10;
