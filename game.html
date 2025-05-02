@@ -19,6 +19,10 @@
             background-color: black;
             margin-left: 20px;
             border-radius: 5px;
+            text-align: center;
+            line-height: 50px;
+            font-size: 20px;
+            color: white;
         }
     </style>
 </head>
@@ -31,6 +35,7 @@
         const difficoltà = parametri.get('difficulty')
         let grandezzaMatrice = 0;
         let caselleCliccate = new Array();
+        let counter = 1;
 
         if (difficoltà === 'easy') {
             grandezzaMatrice = 5;
@@ -67,6 +72,8 @@
         // Funzione che colora le caselle disponibili per la mossa
         function mostraMossePossibili(casella, matrice, caselleCliccate) {
             caselleCliccate.push(casella); // Aggiunge la casella cliccata all'array delle caselle cliccate
+            casella.textContent = counter; // Aggiunge il numero della mossa alla casella cliccata
+            counter++;
             for (let i = 0; i < matrice.length; i++) { // Rimuove il colore dalle caselle precedentemente colorate
                 for (let j = 0; j < matrice.length; j++) {
                     matrice[i][j].style.backgroundColor = "black";
@@ -84,7 +91,7 @@
                         y = j;
                     }
                 }
-                let mossePossibili = [
+                let mossePossibili = [ //miao
                     [x - 3, y],
                     [x + 3, y],
                     [x, y - 3],
@@ -112,16 +119,56 @@
                     }
                     else {
                         matrice[mossaX][mossaY].style.backgroundColor = "red";
-                    }                }
+                    }                
+                }
             }
         }
 
-        matrice = creaMatrice(grandezzaMatrice);
+        function calcolaVittoria(caselleCliccate, matrice) {
+            let indice = 0;
+            if (caselleCliccate.length === matrice.length * matrice.length) {
+                alert("Hai vinto!");
+                return true;
+            }
+            for (let i = 0; i < matrice.length; i++) {
+                for (let j = 0; j < matrice.length; j++) {
+                    if (matrice[i][j].style.backgroundColor === "red") {
+                        indice ++;
+                    }
+                }
+            }
+            if (indice === 0){
+                alert("Hai perso!");
+                return true;
+            }
+        }
+
+        let matrice = creaMatrice(grandezzaMatrice);
 
         for (let i = 0; i < matrice.length; i++) {
             for (let j = 0; j < matrice.length; j++) {
-                matrice[i][j].addEventListener("click", function() {
-                    mostraMossePossibili(matrice[i][j], matrice, caselleCliccate);
+                matrice[i][j].addEventListener("click", function () {
+                    const colore = matrice[i][j].style.backgroundColor;
+                    // Prima mossa: qualsiasi casella può essere cliccata
+                    if (caselleCliccate.length === 0) {
+                        mostraMossePossibili(matrice[i][j], matrice, caselleCliccate);
+                    }
+                    // Dalla seconda mossa in poi: solo le caselle rosse sono cliccabili
+                    else if (colore === "red") {
+                        mostraMossePossibili(matrice[i][j], matrice, caselleCliccate);
+                        if (calcolaVittoria(caselleCliccate, matrice)) {
+                            for (let i = 0; i < matrice.length; i++) {
+                                for (let j = 0; j < matrice.length; j++) {
+                                    const casella = matrice[i][j];
+                                    casella.style.backgroundColor = "black"; // Ripristina il colore originale   
+                                    casella.textContent = " "; // Ripristina il testo originale
+                                    caselleCliccate = [];
+                                    counter = 1;
+                                    mostraMossePossibili(matrice[i][j], matrice, caselleCliccate);
+                                }
+                            }
+                        }
+                    }
                 });
             }
         }
