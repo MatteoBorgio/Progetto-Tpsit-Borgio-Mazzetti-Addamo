@@ -24,11 +24,20 @@
             font-size: 20px;
             color: white;
         }
+
+        #salvaTempi {
+            position: absolute;
+            margin-top: 20px;
+            font-size: 20px;
+            color: #333;
+        }
     </style>
 </head>
 <body>
     <div id="container">
         <h1>Il gioco del cento</h1>
+        <p id="tempo">00:00</p>
+        <p id="salvaTempi">Nessun tempo disponibile</p>
     </div>
     <script>
         const parametri = new URLSearchParams(window.location.search);
@@ -36,15 +45,22 @@
         let grandezzaMatrice = 0;
         let caselleCliccate = new Array();
         let counter = 1;
+        let tempi_salvati = new Array();
+        const salvaTempi = document.getElementById("salvaTempi");
+        let tempoIniziale = 0;
+        
 
         if (difficoltà === 'easy') {
             grandezzaMatrice = 5;
+            salvaTempi.style.left = "350px"; // Sposta il testo a sinistra per la difficoltà facile
         }
         else if (difficoltà === 'medium') {
             grandezzaMatrice = 7;
+            salvaTempi.style.left = "500px"; // Sposta il testo a sinistra per la difficoltà media
         }
         else {
             grandezzaMatrice = 10;
+            salvaTempi.style.left = "650px"; // Sposta il testo a sinistra per la difficoltà difficile
         }
 
         // Funzione per creare la matrice che rappresenterà la nostra griglia di gioco
@@ -126,6 +142,7 @@
 
         // Funzione per resettare la matrice e le variabili globali
         function resetMatrice(matrice, caselleCliccate) {
+            fermaTimer(); 
             caselleCliccate.length = 0;
             counter = 1;
             for (let i = 0; i < matrice.length; i++) {
@@ -141,9 +158,26 @@
             let indice = 0;
             if (caselleCliccate.length === matrice.length * matrice.length) {
                 alert("Hai vinto!");
+                
+                // Salva il tempo solo in caso di vittoria
+                const tempoTrascorso = 
+                    (minuti < 10 ? "0" + minuti : minuti) + ":" + 
+                    (secondi < 10 ? "0" + secondi : secondi);
+                if (!tempi_salvati.includes(tempoTrascorso) && tempoTrascorso !== "00:00") {
+                    tempi_salvati.push(tempoTrascorso);
+                }
+
+                // Aggiorna il testo per mostrare i tempi salvati
+                if (tempi_salvati.length > 0) {
+                    salvaTempi.textContent = "Tempi salvati: " + tempi_salvati.join(", ");
+                } else {
+                    salvaTempi.textContent = "Nessun tempo disponibile";
+                }
+
                 resetMatrice(matrice, caselleCliccate); // Resetta la matrice in caso di vittoria
                 return true;
             }
+
             // Ciclo che verifica se ci sono caselle rosse rimaste
             for (let i = 0; i < matrice.length; i++) {
                 for (let j = 0; j < matrice.length; j++) {
@@ -152,6 +186,7 @@
                     }
                 }
             }
+
             // Se non ci sono più caselle rosse, il giocatore ha perso
             if (indice === 0) {
                 alert("Hai perso!");
@@ -162,6 +197,43 @@
 
         let matrice = creaMatrice(grandezzaMatrice);
 
+        // Timer della partita
+        let secondi = 0;
+        let minuti = 0;
+        let timerId; // Variabile per memorizzare l'ID del setInterval
+
+        function aggiornaTimer() {
+            secondi++;
+            if (secondi === 60) {
+                secondi = 0;
+                minuti++;
+            }
+            const timerElement = document.getElementById("tempo");
+            timerElement.textContent = 
+                (minuti < 10 ? "0" + minuti : minuti) + ":" + 
+                (secondi < 10 ? "0" + secondi : secondi);
+        }
+
+        function avviaTimer() {
+            tempoIniziale = Date.now(); // Salva il tempo iniziale
+            timerId = setInterval(aggiornaTimer, 1000); // Salva l'ID del timer
+        }
+
+        function fermaTimer() {
+            clearInterval(timerId); // Ferma il timer
+
+            // Calcola il tempo trascorso in formato MM:SS
+            const tempoTrascorso = 
+                (minuti < 10 ? "0" + minuti : minuti) + ":" + 
+                (secondi < 10 ? "0" + secondi : secondi);
+
+            // Resetta il timer
+            secondi = 0;
+            minuti = 0;
+            const timerElement = document.getElementById("tempo");
+            timerElement.textContent = "00:00";
+        }
+
         for (let i = 0; i < matrice.length; i++) {
             for (let j = 0; j < matrice.length; j++) {
                 matrice[i][j].addEventListener("click", function () {
@@ -169,16 +241,13 @@
                     // Prima mossa: qualsiasi casella può essere cliccata
                     if (caselleCliccate.length === 0) {
                         mostraMossePossibili(matrice[i][j], matrice, caselleCliccate);
+                        avviaTimer(); // Avvia il timer alla prima mossa
                     }
                     // Dalla seconda mossa in poi: solo le caselle rosse sono cliccabili
                     else if (colore === "red") {
                         mostraMossePossibili(matrice[i][j], matrice, caselleCliccate);
                         if (calcolaVittoria(caselleCliccate, matrice)) {
-                            for (let i = 0; i < matrice.length; i++) {
-                                for (let j = 0; j < matrice.length; j++) {
-                                    resetMatrice(matrice, caselleCliccate);
-                                }
-                            }
+                            resetMatrice(matrice, caselleCliccate);
                         }
                     }
                 });
@@ -188,4 +257,3 @@
     </script>
 </body>
 </html>
-``` 
