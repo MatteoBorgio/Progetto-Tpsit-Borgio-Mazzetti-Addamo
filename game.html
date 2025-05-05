@@ -4,33 +4,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Il gioco del cento</title>
-    <link rel="stylesheet" href="game.css">
     <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            padding: 10px;
-            padding-left: 20px;
-        }
+    html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
+    background-color: #f4f7f9; 
+}
 
-        .casella {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background-color: black;
-            margin-left: 20px;
-            border-radius: 5px;
-            text-align: center;
-            line-height: 50px;
-            font-size: 20px;
-            color: white;
-        }
+body {
+    padding: 20px;
+}
 
-        #salvaTempi {
-            position: absolute;
-            margin-top: 20px;
-            font-size: 20px;
-            color: #333;
-        }
+#container {
+    background-color: #ffffff; 
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 8000px; 
+    height: 800px;
+}
+
+h1 {
+    font-size: 32px;
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+p {
+    font-size: 18px;
+    color: #555;
+    margin: 10px 0;
+}
+
+#tempo {
+    font-size: 28px;
+    color: #4caf50;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+#salvaTempi {
+    font-size: 16px;
+    color: #333;
+    margin-top: 15px;
+    font-style: italic;
+    text-align: left;
+}
+
+.casella {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: #333; 
+    border-radius: 5px;
+    text-align: center;
+    line-height: 50px;
+    font-size: 20px;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.casella:hover {
+    background-color: #4caf50;
+}
+
+#salvaTempi {
+    font-size: 16px;
+    color: #333;
+    margin-top: 20px;
+    font-style: italic;
+}
+
+button {
+    background-color: #4caf50;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #388e3c;
+}
+
+button:focus {
+    outline: none;
+}
+
     </style>
 </head>
 <body>
@@ -52,15 +121,15 @@
 
         if (difficoltà === 'easy') {
             grandezzaMatrice = 5;
-            salvaTempi.style.left = "350px"; // Sposta il testo a sinistra per la difficoltà facile
+            
         }
         else if (difficoltà === 'medium') {
             grandezzaMatrice = 7;
-            salvaTempi.style.left = "500px"; // Sposta il testo a sinistra per la difficoltà media
+            
         }
         else {
             grandezzaMatrice = 10;
-            salvaTempi.style.left = "650px"; // Sposta il testo a sinistra per la difficoltà difficile
+            
         }
 
         // Funzione per creare la matrice che rappresenterà la nostra griglia di gioco
@@ -75,8 +144,9 @@
                     matrice[i][j] = casella; 
                     container.appendChild(matrice[i][j]);
                     // Posizionamento dinamico delle caselle, in base alla posizione della casella precendente
-                    let x = (i * 55) + 130;
+                    let x = (i * 55) + 260;
                     let y = (j * 55) + 10;
+                    matrice[i][j].style.marginLeft = "30px"; // Aggiunge un margine a sinistra per la prima colonna
                     matrice[i][j].style.top = x + "px"; 
                     matrice[i][j].style.left = y + "px";
                     matrice[i][j].style.position = "absolute";
