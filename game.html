@@ -124,21 +124,38 @@
             }
         }
 
+        // Funzione per resettare la matrice e le variabili globali
+        function resetMatrice(matrice, caselleCliccate) {
+            caselleCliccate.length = 0;
+            counter = 1;
+            for (let i = 0; i < matrice.length; i++) {
+                for (let j = 0; j < matrice.length; j++) {
+                    const casella = matrice[i][j];
+                    casella.style.backgroundColor = "black"; 
+                    casella.textContent = ""; 
+                }
+            }
+        }
+
         function calcolaVittoria(caselleCliccate, matrice) {
             let indice = 0;
             if (caselleCliccate.length === matrice.length * matrice.length) {
                 alert("Hai vinto!");
+                resetMatrice(matrice, caselleCliccate); // Resetta la matrice in caso di vittoria
                 return true;
             }
+            // Ciclo che verifica se ci sono caselle rosse rimaste
             for (let i = 0; i < matrice.length; i++) {
                 for (let j = 0; j < matrice.length; j++) {
                     if (matrice[i][j].style.backgroundColor === "red") {
-                        indice ++;
+                        indice++;
                     }
                 }
             }
-            if (indice === 0){
+            // Se non ci sono più caselle rosse, il giocatore ha perso
+            if (indice === 0) {
                 alert("Hai perso!");
+                resetMatrice(matrice, caselleCliccate); 
                 return true;
             }
         }
@@ -159,12 +176,7 @@
                         if (calcolaVittoria(caselleCliccate, matrice)) {
                             for (let i = 0; i < matrice.length; i++) {
                                 for (let j = 0; j < matrice.length; j++) {
-                                    const casella = matrice[i][j];
-                                    casella.style.backgroundColor = "black"; // Ripristina il colore originale   
-                                    casella.textContent = " "; // Ripristina il testo originale
-                                    caselleCliccate = [];
-                                    counter = 1;
-                                    mostraMossePossibili(matrice[i][j], matrice, caselleCliccate);
+                                    resetMatrice(matrice, caselleCliccate);
                                 }
                             }
                         }
@@ -172,6 +184,8 @@
                 });
             }
         }
+        
     </script>
 </body>
 </html>
+``` 
